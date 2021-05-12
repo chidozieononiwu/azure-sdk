@@ -32,4 +32,5 @@ steps:
       -changedPackagesPath $(ChangedPackagesPath)
 
 - pwsh: |
-    Write-Host (Get-Content -Path $(ChangedPackagesPath))
+    $fileContent = Get-Content -Path $(ChangedPackagesPath) -Raw
+    Write-Host $fileContent

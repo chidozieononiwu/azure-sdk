@@ -143,9 +143,9 @@ function GetFirstGADate($pkgVersion, $pkg)
 
 function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
 {
+  $updatedPackages = @()
   foreach ($pkg in $packageList)
   {
-    $updatedPackages = @()
     if ($langVersions.ContainsKey($pkg.Package)) {
       $pkgVersion = $langVersions[$pkg.Package]
     }
@@ -184,6 +184,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredLinks $langLinkTemplates $pkg $version){
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
+        Write-Host "[debug]$pkg"
         $updatedPackages += $pkg
       }
       else {
@@ -206,6 +207,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredlinks $langLinkTemplates $pkg $version) {
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
+        Write-Host "[debug]$pkg"
         $updatedPackages += $pkg
       }
       else {
@@ -226,7 +228,7 @@ function OutputVersions($lang)
   $langLinkTemplates = GetLinkTemplates $lang
 
   $updatedPackages = Update-Packages $lang $clientPackages $langVersions $langLinkTemplates
-  $updatedPackages | % { $_ | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang}
+  $updatedPackages | % { $_ | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang }
 
   foreach($otherPackage in $otherPackages)
   {
@@ -234,6 +236,8 @@ function OutputVersions($lang)
   }
 
   Set-PackageListForLanguage $lang ($clientPackages + $otherPackages)
+
+  return $updatedPackages
 }
 
 function OutputAll($langs)
@@ -245,7 +249,7 @@ function OutputAll($langs)
     $updatedPackages += OutputVersions $lang
   }
   if ($changedPackagesPath) {
-    $updatedPackages | ConvertTo-CSV -NoTypeInformation -UseQuotes Always | Out-File $changedPackagesPath -Encoding ascii
+    $updatedPackages | ConvertTo-Json | Out-File $changedPackagesPath -Encoding ascii
   }
 }
 
