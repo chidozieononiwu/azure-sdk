@@ -10,7 +10,7 @@ resources:
       ref: refs/tags/azure-sdk-tools_20210527.1
 
 variables:
-  ChangedPackagesPath: $(System.BinariesDirectory)/ChangedPackages.json
+  ChangedPackagesPath: $(Build.ArtifactStagingDirectory)/ChangedPackages.json
 
 steps:
 - checkout: self
