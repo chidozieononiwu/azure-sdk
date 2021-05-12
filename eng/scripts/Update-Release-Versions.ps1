@@ -3,7 +3,8 @@ param (
   [string]$language = "all",
   [bool]$checkDocLinks = $true,
   [bool]$compareTagVsGHIOVersions = $false,
-  [string] $github_pat = $env:GITHUB_PAT
+  [string] $github_pat = $env:GITHUB_PAT,
+  [string] $changedPackagesPath = ""
 )
 Set-StrictMode -Version 3
 $ProgressPreference = "SilentlyContinue"; # Disable invoke-webrequest progress dialog
@@ -144,6 +145,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
 {
   foreach ($pkg in $packageList)
   {
+    $updatedPackages = @()
     if ($langVersions.ContainsKey($pkg.Package)) {
       $pkgVersion = $langVersions[$pkg.Package]
     }
@@ -152,16 +154,16 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       $pkgVersion = $langVersions[""]
     }
     else {
-      Write-Host "Skipping update for $($pkg.Package) as we don't have versiong info for it. "
+      Write-Host "Skipping update for $($pkg.Package) as we don't have version info for it. "
       continue
     }
 
-    $version = $pkgVersion.LatestGA
-
     if ($null -eq $pkgVersion) {
-      Write-Host "Skipping update for $($pkg.Package) as we don't have versiong info for it. "
+      Write-Host "Skipping update for $($pkg.Package) as we don't have version info for it. "
       continue;
     }
+
+    $version = $pkgVersion.LatestGA
 
     if ($compareTagVsGHIOVersions) {
       $versionFromGH = GetVersionWebContent $lang $pkg.Package "latest-ga"
@@ -182,6 +184,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredLinks $langLinkTemplates $pkg $version){
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
+        $updatedPackages += $pkg
       }
       else {
         Write-Warning "Not updating VersionGA for $($pkg.Package) because at least one associated URL is not valid!"
@@ -203,6 +206,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredlinks $langLinkTemplates $pkg $version) {
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
+        $updatedPackages += $pkg
       }
       else {
         Write-Warning "Not updating VersionPreview for $($pkg.Package) because at least one associated URL is not valid!"
@@ -210,6 +214,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
     }
     CheckOptionalLinks $langLinkTemplates $pkg
   }
+  return $updatedPackages
 }
 
 function OutputVersions($lang)
@@ -220,7 +225,8 @@ function OutputVersions($lang)
   $langVersions = GetPackageVersions $lang
   $langLinkTemplates = GetLinkTemplates $lang
 
-  Update-Packages $lang $clientPackages $langVersions $langLinkTemplates
+  $updatedPackages = Update-Packages $lang $clientPackages $langVersions $langLinkTemplates
+  $updatedPackages | % { $_ | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang}
 
   foreach($otherPackage in $otherPackages)
   {
@@ -232,10 +238,14 @@ function OutputVersions($lang)
 
 function OutputAll($langs)
 {
+  $updatedPackages = @()
   $langs = $langs | Sort-Object
   foreach ($lang in $langs)
   {
-    OutputVersions $lang
+    $updatedPackages += OutputVersions $lang
+  }
+  if ($changedPackagesPath) {
+    $updatedPackages | ConvertTo-CSV -NoTypeInformation -UseQuotes Always | Out-File $changedPackagesPath -Encoding ascii
   }
 }
 
