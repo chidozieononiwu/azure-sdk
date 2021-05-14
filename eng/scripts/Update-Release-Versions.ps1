@@ -185,7 +185,9 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
         Write-Host "[debug]$pkg"
-        $updatedPackages += $pkg
+        $updatedGAPackage = $pkg.PSObject.Copy()
+        $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+        $updatedPackages += $updatedGAPackage
       }
       else {
         Write-Warning "Not updating VersionGA for $($pkg.Package) because at least one associated URL is not valid!"
@@ -208,7 +210,9 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
         Write-Host "[debug]$pkg"
-        $updatedPackages += $pkg
+        $updatedPreviewPackage = $pkg.PSObject.Copy()
+        $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+        $updatedPackages += $updatedPreviewPackage
       }
       else {
         Write-Warning "Not updating VersionPreview for $($pkg.Package) because at least one associated URL is not valid!"
