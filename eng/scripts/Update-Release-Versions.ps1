@@ -3,8 +3,8 @@ param (
   [string]$language = "all",
   [bool]$checkDocLinks = $true,
   [bool]$compareTagVsGHIOVersions = $false,
-  [string] $github_pat = $env:GITHUB_PAT,
-  [string] $changedPackagesPath = ""
+  [string]$github_pat = $env:GITHUB_PAT,
+  [string]$changedPackagesPath = ""
 )
 Set-StrictMode -Version 3
 $ProgressPreference = "SilentlyContinue"; # Disable invoke-webrequest progress dialog
@@ -185,6 +185,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
         Write-Host "[debug]$pkg"
+        Write-Host "[debug]LanguageLinkTemplates $($langLinkTemplates.Values)"
         $updatedGAPackage = $pkg.PSObject.Copy()
         $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
         $updatedPackages += $updatedGAPackage
@@ -210,6 +211,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
         Write-Host "[debug]$pkg"
+        Write-Host "[debug]LanguageLinkTemplates $($langLinkTemplates.Values)"
         $updatedPreviewPackage = $pkg.PSObject.Copy()
         $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
         $updatedPackages += $updatedPreviewPackage

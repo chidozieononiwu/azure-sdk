@@ -6,7 +6,7 @@ param (
   [string]$changedPackagesPath
 )
 
-function AddChangelogUrls ()
+function AddChangelogUrls ($changedPackagesPath)
 {
     $changedPackages = (Get-Content -Path $changedPackagesPath | ConvertFrom-Json).where({ $_.Language -eq $repoLanguage })
 
@@ -109,9 +109,6 @@ function GetReleaseNotesData ($changedPackages)
 . (Join-Path $commonScriptPath ChangeLog-Operations.ps1)
 . (Join-Path $commonScriptPath SemVer.ps1)
 
-#. $commonScript
-#$CsvMetaData = Get-CSVMetadata -MetadataUri "https://raw.githubusercontent.com/azure-sdk/azure-sdk/PackageVersionUpdates/_data/releases/latest/${releaseFileName}-packages.csv"
-
 $releaseFilePath = (Join-Path $ReleaseDirectory $releasePeriod "${repoLanguage}.md")
 $pathToRelatedYaml = (Join-Path $ReleaseDirectory ".." _data releases $releasePeriod "${repoLanguage}.yml")
 LogDebug "Release File Path [ $releaseFilePath ]"
@@ -131,7 +128,7 @@ Install-Module -Repository azure-sdk-tools-feed powershell-yaml
 
 $existingYamlContent = ConvertFrom-Yaml (Get-Content $pathToRelatedYaml -Raw) -Ordered
 
-$changedPackages = AddChangelogUrls
+$changedPackages = AddChangelogUrls -changedPackagesPath $changedPackagesPath
 $incomingReleaseEntries = GetReleaseNotesData -changedPackages $changedPackages
 $filteredEntries = @()
 
