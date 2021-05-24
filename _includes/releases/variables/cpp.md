@@ -4,3 +4,5 @@
 <!--{% assign msdocs_url_template = "https://docs.microsoft.com/cpp/api/overview/azure/item.TrimmedPackage-readme" %}-->
 {% assign ghdocs_url_template = "https://azuresdkdocs.blob.core.windows.net/$web/cpp/item.Package/item.Version/index.html" %}
 {% assign source_url_template = "https://github.com/Azure/azure-sdk-for-cpp/tree/item.Package_item.Version/sdk/item.RepoPath/item.Package" %}
+{% assign changelog_blob_url_template = "https://github.com/Azure/azure-sdk-for-cpp/blob/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}
+{% assign changelog_raw_url_template = "https://raw.githubusercontent.com/Azure/azure-sdk-for-cpp/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}

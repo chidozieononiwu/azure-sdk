@@ -108,6 +108,7 @@ function CheckRequiredLinks($linkTemplates, $pkg, $version)
   $pkgLink = GetLinkTemplateValue $linkTemplates "package_url_template" $pkg.Package $version $pkg.RepoPath $groupId
 
   $valid = $valid -and (CheckLink $pkgLink)
+
   return $valid
 }
 
@@ -185,10 +186,19 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
         Write-Host "[debug]$pkg"
-        Write-Host "[debug]LanguageLinkTemplates $($langLinkTemplates.Values)"
-        $updatedGAPackage = $pkg.PSObject.Copy()
-        $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
-        $updatedPackages += $updatedGAPackage
+
+        $changelogBlobLink = GetTemplateValue $langLinkTemplates "changelog_blob_url_template" $pkg.Package $version $pkg.RepoPath
+        $changelogRawLink = GetTemplateValue $langLinkTemplates "changelog_raw_url_template" $pkg.Package $version $pkg.RepoPath
+
+        if ($changelogBlobLink -and $changelogRawLink)
+        {
+          $updatedGAPackage = $pkg.PSObject.Copy()
+          $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+          $updatedGAPackage | Add-Member -NotePropertyName "ChangelogBlobLink" -NotePropertyValue $changelogBlobLink
+          $updatedGAPackage | Add-Member -NotePropertyName "ChangelogRawLink" -NotePropertyValue $changelogRawLink
+          $updatedGAPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
+          $updatedPackages += $updatedGAPackage
+        }
       }
       else {
         Write-Warning "Not updating VersionGA for $($pkg.Package) because at least one associated URL is not valid!"
@@ -211,10 +221,19 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
         Write-Host "[debug]$pkg"
-        Write-Host "[debug]LanguageLinkTemplates $($langLinkTemplates.Values)"
-        $updatedPreviewPackage = $pkg.PSObject.Copy()
-        $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
-        $updatedPackages += $updatedPreviewPackage
+
+        $changelogBlobLink = GetTemplateValue $langLinkTemplates "changelog_blob_url_template" $pkg.Package $version $pkg.RepoPath
+        $changelogRawLink = GetTemplateValue $langLinkTemplates "changelog_raw_url_template" $pkg.Package $version $pkg.RepoPath
+
+        if ($changelogBlobLink -and $changelogRawLink)
+        {
+          $updatedPreviewPackage = $pkg.PSObject.Copy()
+          $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+          $updatedPreviewPackage | Add-Member -NotePropertyName "ChangelogBlobLink" -NotePropertyValue $changelogBlobLink
+          $updatedPreviewPackage | Add-Member -NotePropertyName "ChangelogRawLink" -NotePropertyValue $changelogRawLink
+          $updatedPreviewPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang
+          $updatedPackages += $updatedPreviewPackage
+        }
       }
       else {
         Write-Warning "Not updating VersionPreview for $($pkg.Package) because at least one associated URL is not valid!"
@@ -234,7 +253,6 @@ function OutputVersions($lang)
   $langLinkTemplates = GetLinkTemplates $lang
 
   $updatedPackages = Update-Packages $lang $clientPackages $langVersions $langLinkTemplates
-  $updatedPackages | % { $_ | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang }
 
   foreach($otherPackage in $otherPackages)
   {
