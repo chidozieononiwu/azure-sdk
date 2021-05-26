@@ -30,14 +30,14 @@ steps:
     displayName: Set Release Period Value
 
   - ${{ each repo in parameters.Repos }}:
-    - pwsh: |
-        $ErrorActionPreference = "Continue"
-        git reset --hard ${{ parameters.DefaultBranch }}
-        git checkout "origin/${{ parameters.PrBranchName }}_${{ repo.value.Language }}_$(ReleasePeriod)" 2>&1 | Out-Null
-        $LASTEXITCODE = 0 # This ignores any error from git checkout
-        git status
-      displayName: Checkout Previous PRBranch if it exist.
-      workingDirectory: $(System.DefaultWorkingDirectory)/azure-sdk
+    #- pwsh: |
+    #    $ErrorActionPreference = "Continue"
+    #    git reset --hard ${{ parameters.DefaultBranch }}
+    #    git checkout "origin/${{ parameters.PrBranchName }}_${{ repo.value.Language }}_$(ReleasePeriod)" 2>&1 | Out-Null
+    #    $LASTEXITCODE = 0 # This ignores any error from git checkout
+    #    git status
+    #  displayName: Checkout Previous PRBranch if it exist.
+    #  workingDirectory: $(System.DefaultWorkingDirectory)/azure-sdk
 
     - task: PowerShell@2
       displayName: 'Generate ReleaseNotes for the Release Period'
