@@ -187,18 +187,12 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         $pkg.VersionGA = $version;
         Write-Host "[debug]$pkg"
 
-        $changelogBlobLink = GetTemplateValue $langLinkTemplates "changelog_blob_url_template" $pkg.Package $version $pkg.RepoPath
-        $changelogRawLink = GetTemplateValue $langLinkTemplates "changelog_raw_url_template" $pkg.Package $version $pkg.RepoPath
-
-        if ($changelogBlobLink -and $changelogRawLink)
-        {
-          $updatedGAPackage = $pkg.PSObject.Copy()
-          $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
-          $updatedGAPackage | Add-Member -NotePropertyName "ChangelogBlobLink" -NotePropertyValue $changelogBlobLink
-          $updatedGAPackage | Add-Member -NotePropertyName "ChangelogRawLink" -NotePropertyValue $changelogRawLink
-          $updatedGAPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
-          $updatedPackages += $updatedGAPackage
-        }
+        $updatedGAPackage = $pkg.PSObject.Copy()
+        $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
+        $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+        $updatedGAPackage | Add-Member -NotePropertyName "SourceUrl" -NotePropertyValue $sourceUrl
+        $updatedGAPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
+        $updatedPackages += $updatedGAPackage
       }
       else {
         Write-Warning "Not updating VersionGA for $($pkg.Package) because at least one associated URL is not valid!"
@@ -222,18 +216,12 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         $pkg.VersionPreview = $version;
         Write-Host "[debug]$pkg"
 
-        $changelogBlobLink = GetTemplateValue $langLinkTemplates "changelog_blob_url_template" $pkg.Package $version $pkg.RepoPath
-        $changelogRawLink = GetTemplateValue $langLinkTemplates "changelog_raw_url_template" $pkg.Package $version $pkg.RepoPath
-
-        if ($changelogBlobLink -and $changelogRawLink)
-        {
-          $updatedPreviewPackage = $pkg.PSObject.Copy()
-          $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
-          $updatedPreviewPackage | Add-Member -NotePropertyName "ChangelogBlobLink" -NotePropertyValue $changelogBlobLink
-          $updatedPreviewPackage | Add-Member -NotePropertyName "ChangelogRawLink" -NotePropertyValue $changelogRawLink
-          $updatedPreviewPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang
-          $updatedPackages += $updatedPreviewPackage
-        }
+        $updatedPreviewPackage = $pkg.PSObject.Copy()
+        $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
+        $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
+        $updatedPreviewPackage | Add-Member -NotePropertyName "SourceUrl" -NotePropertyValue $sourceUrl
+        $updatedPreviewPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
+        $updatedPackages += $updatedPreviewPackage
       }
       else {
         Write-Warning "Not updating VersionPreview for $($pkg.Package) because at least one associated URL is not valid!"

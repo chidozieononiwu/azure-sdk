@@ -11,14 +11,16 @@ function GetReleaseNotesData ($changedPackages)
     $entries = @()
     foreach ($package in $changedPackages)
     {
+        $changelogBlobLink = "$($package.SourceUrl)/CHANGELOG.md"
+        $changelogRawLink = $changelogBlobLink -replace "https://github.com/(.*)/(tree|blob)", "https://raw.githubusercontent.com/`$1"
         try
-        {
-            $changelogContent = Invoke-RestMethod -Method GET -Uri $package.ChangelogRawLink -MaximumRetryCount 2
+        { 
+            $changelogContent = Invoke-RestMethod -Method GET -Uri $changelogRawLink -MaximumRetryCount 2
         }
         catch
         {
             # Skip if the changelog Url is invalid
-            LogWarning "Failed to get content from $($package.ChangelogRawLink)"
+            LogWarning "Failed to get content from ${changelogRawLink}"
             LogWarning "ReleaseNotes will not be collected for $($package.Package) : $($package.UpdatedVersion). Please add entry manually."
             continue
         }
@@ -46,7 +48,7 @@ function GetReleaseNotesData ($changedPackages)
                 ServiceName = $package.ServiceName
                 VersionType = $packageSemVer.VersionType
                 Hidden = $false
-                ChangelogUrl = $package.ChangelogBlobLink
+                ChangelogUrl = $changelogBlobLink
                 ChangelogContent = ($releaseEntryContent | Out-String).Trim()
             }
 
@@ -105,17 +107,10 @@ if($existingYamlContent.entries)
 else 
 {
     $filteredEntries = $incomingReleaseEntries
-}
-
-if ($null -eq $existingYamlContent.entries)
-{
     $existingYamlContent.entries = New-Object "System.Collections.Generic.List[System.Collections.Specialized.OrderedDictionary]"
 }
 
-foreach ($entry in $filteredEntries)
-{
-    $existingYamlContent.entries += $entry
-    LogDebug "Entry $entry Updated"
-}
+ForEach-Object -InputObject $filteredEntries -Process {$existingYamlContent.entries += $_}
+LogDebug $existingYamlContent.entries.Count
 
 #Set-Content -Path $pathToRelatedYaml -Value (ConvertTo-Yaml $existingYamlContent)

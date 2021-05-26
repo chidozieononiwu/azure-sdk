@@ -6,5 +6,3 @@
 <!--{% assign msdocs_url_template = "https://docs.microsoft.com/android/api/overview/azure/item.TrimmedPackage-readme" %}-->
 <!--{% assign ghdocs_url_template = "https://azuresdkdocs.blob.core.windows.net/$web/android/item.Package/item.Version/index.html" %}-->
 {% assign source_url_template = "https://github.com/Azure/azure-sdk-for-android/tree/item.Package_item.Version/sdk/item.RepoPath/item.Package" %}
-{% assign changelog_blob_url_template = "https://github.com/Azure/azure-sdk-for-android/blob/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}
-{% assign changelog_raw_url_template = "https://raw.githubusercontent.com/Azure/azure-sdk-for-android/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}

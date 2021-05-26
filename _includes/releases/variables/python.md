@@ -6,5 +6,3 @@
 {% assign msdocs_url_template = "https://docs.microsoft.com/python/api/overview/azure/item.TrimmedPackage-readme" %}
 {% assign ghdocs_url_template = "https://azuresdkdocs.blob.core.windows.net/$web/python/item.Package/item.Version/index.html" %}
 {% assign source_url_template = "https://github.com/Azure/azure-sdk-for-python/tree/item.Package_item.Version/sdk/item.RepoPath/item.Package/" %}
-{% assign changelog_blob_url_template = "https://github.com/Azure/azure-sdk-for-python/blob/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}
-{% assign changelog_raw_url_template = "https://raw.githubusercontent.com/Azure/azure-sdk-for-python/item.Package_item.Version/sdk/item.RepoPath/item.Package/CHANGELOG.md" %}
