@@ -187,7 +187,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         $pkg.VersionGA = $version;
 
         $updatedGAPackage = $pkg.PSObject.Copy()
-        $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
+        $sourceUrl = GetLinkTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
         $updatedGAPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
         $updatedGAPackage | Add-Member -NotePropertyName "SourceUrl" -NotePropertyValue $sourceUrl
         $updatedGAPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
@@ -215,7 +215,7 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
         $pkg.VersionPreview = $version;
 
         $updatedPreviewPackage = $pkg.PSObject.Copy()
-        $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
+        $sourceUrl = GetLinkTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
         $updatedPreviewPackage | Add-Member -NotePropertyName "UpdatedVersion" -NotePropertyValue $version
         $updatedPreviewPackage | Add-Member -NotePropertyName "SourceUrl" -NotePropertyValue $sourceUrl
         $updatedPreviewPackage | Add-Member -NotePropertyName "Language" -NotePropertyValue $lang 
