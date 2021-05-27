@@ -185,7 +185,6 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredLinks $langLinkTemplates $pkg $version){
         Write-Host "Updating VersionGA $($pkg.Package) from $($pkg.VersionGA) to $version"
         $pkg.VersionGA = $version;
-        Write-Host "[debug]$pkg"
 
         $updatedGAPackage = $pkg.PSObject.Copy()
         $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath
@@ -214,7 +213,6 @@ function Update-Packages($lang, $packageList, $langVersions, $langLinkTemplates)
       if (CheckRequiredlinks $langLinkTemplates $pkg $version) {
         Write-Host "Updating VersionPreview $($pkg.Package) from $($pkg.VersionPreview) to $version"
         $pkg.VersionPreview = $version;
-        Write-Host "[debug]$pkg"
 
         $updatedPreviewPackage = $pkg.PSObject.Copy()
         $sourceUrl = GetTemplateValue $langLinkTemplates "source_url_template" $pkg.Package $version $pkg.RepoPath

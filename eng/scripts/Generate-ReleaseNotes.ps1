@@ -11,6 +11,11 @@ function GetReleaseNotesData ($changedPackages)
     $entries = New-Object "System.Collections.Generic.List[System.Collections.Specialized.OrderedDictionary]"
     foreach ($package in $changedPackages)
     {
+        if ($package.Language -ne $repoLanguage)
+        {
+            continue
+        }
+
         $changelogBlobLink = "$($package.SourceUrl)/CHANGELOG.md"
         $changelogRawLink = $changelogBlobLink -replace "https://github.com/(.*)/(tree|blob)", "https://raw.githubusercontent.com/`$1"
         try
@@ -66,7 +71,6 @@ function GetReleaseNotesData ($changedPackages)
                 $entry.Add("GroupId", $package.GroupId)
             }
             $entries.Add($entry)
-            LogDebug "Entry $entry Added"
         }
     }
     return $entries
@@ -114,6 +118,4 @@ else
     $existingYamlContent.entries = $filteredEntries
 }
 
-LogDebug $existingYamlContent.entries.Count
-
-#Set-Content -Path $pathToRelatedYaml -Value (ConvertTo-Yaml $existingYamlContent)
+Set-Content -Path $pathToRelatedYaml -Value (ConvertTo-Yaml $existingYamlContent)
