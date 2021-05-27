@@ -8,7 +8,7 @@ param (
 
 function GetReleaseNotesData ($changedPackages)
 {
-    $entries = @()
+    $entries = New-Object "System.Collections.Generic.List[System.Collections.Specialized.OrderedDictionary]"
     foreach ($package in $changedPackages)
     {
         $changelogBlobLink = "$($package.SourceUrl)/CHANGELOG.md"
@@ -65,7 +65,7 @@ function GetReleaseNotesData ($changedPackages)
             {
                 $entry.Add("GroupId", $package.GroupId)
             }
-            $entries += $entry
+            $entries.Add($entry)
             LogDebug "Entry $entry Added"
         }
     }
@@ -94,7 +94,7 @@ $existingYamlContent = ConvertFrom-Yaml (Get-Content $pathToRelatedYaml -Raw) -O
 
 $changedPackages = Get-Content -Path $changedPackagesPath | ConvertFrom-Json
 $incomingReleaseEntries = GetReleaseNotesData -changedPackages $changedPackages
-$filteredEntries = @()
+$filteredEntries = New-Object "System.Collections.Generic.List[System.Collections.Specialized.OrderedDictionary]"
 
 if($existingYamlContent.entries)
 {
@@ -105,16 +105,15 @@ if($existingYamlContent.entries)
         {
             continue
         }
-        $filteredEntries += $entry
+        $filteredEntries.Add($entry)
     }
 }
 else 
 {
     $filteredEntries = $incomingReleaseEntries
-    $existingYamlContent.entries = New-Object "System.Collections.Generic.List[System.Collections.Specialized.OrderedDictionary]"
+    $existingYamlContent.entries = $filteredEntries
 }
 
-ForEach-Object -InputObject $filteredEntries -Process {$existingYamlContent.entries += $_}
 LogDebug $existingYamlContent.entries.Count
 
 #Set-Content -Path $pathToRelatedYaml -Value (ConvertTo-Yaml $existingYamlContent)
