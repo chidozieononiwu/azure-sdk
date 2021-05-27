@@ -115,7 +115,8 @@ if($existingYamlContent.entries)
 else 
 {
     $filteredEntries = $incomingReleaseEntries
-    $existingYamlContent.entries = $filteredEntries
 }
+
+$existingYamlContent.entries = $filteredEntries
 
 Set-Content -Path $pathToRelatedYaml -Value (ConvertTo-Yaml $existingYamlContent)
