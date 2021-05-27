@@ -32,13 +32,17 @@ function GetReleaseNotesData ($changedPackages)
         {
             $packageSemVer = [AzureEngSemanticVersion]::ParseVersionString($package.UpdatedVersion)
             $releaseEntryContent = @()
-            $changeLogEntry.ReleaseContent | %{
-                $line = $_
-                if ($line.StartsWith("#"))
-                {
-                    $line = "#${line}"
+
+            if ($changeLogEntry.ReleaseContent)
+            {
+                $changeLogEntry.ReleaseContent | %{
+                    $line = $_
+                    if ($line.StartsWith("#"))
+                    {
+                        $line = "#${line}"
+                    }
+                    $releaseEntryContent += $line
                 }
-                $releaseEntryContent += $line
             }
 
             $entry = [ordered]@{
